@@ -22,14 +22,6 @@ const getAllTasks = async () => {
 	});
 };
 
-const getTasksByProjectId = async (project_id) => {
-	const results = await db("tasks").where({ project_id });
-
-	if (!results.length) return null;
-
-	return results;
-};
-
 const createTask = async (task) => {
 	const [task_id] = await db("tasks").insert(task);
 
@@ -39,4 +31,4 @@ const createTask = async (task) => {
 	return result;
 };
 
-module.exports = { getAllTasks, getTasksByProjectId, createTask };
+module.exports = { getAllTasks, createTask };

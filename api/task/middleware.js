@@ -1,4 +1,4 @@
-const Tasks = require("./model");
+const Projects = require("../project/model");
 const taskSchema = require("./validation");
 
 const verifyTaskPayload = async (req, res, next) => {
@@ -6,7 +6,7 @@ const verifyTaskPayload = async (req, res, next) => {
 		req.body = await taskSchema.validateAsync(req.body, {
 			stripUnknown: true,
 		});
-		if (await Tasks.getTasksByProjectId(req.body.project_id)) {
+		if (await Projects.getProjectById(req.body.project_id)) {
 			next();
 		} else {
 			next({ status: 400, message: "Project Id is invalid." });

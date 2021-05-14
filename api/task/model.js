@@ -3,10 +3,10 @@ const db = require("../../data/dbConfig");
 const getAllTasks = async () => {
 	const results = await db
 		.select(
+			"task_id",
 			"task_description",
 			"task_notes",
 			"task_completed",
-			"t.project_id",
 			"project_name",
 			"project_description"
 		)

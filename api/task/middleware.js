@@ -6,9 +6,10 @@ const verifyTaskPayload = async (req, res, next) => {
 		req.body = await taskSchema.validateAsync(req.body, {
 			stripUnknown: true,
 		});
-		if (await Projects.getProjectById(req.body.project_id)) {
+		try {
+			await Projects.getProjectById(req.body.project_id);
 			next();
-		} else {
+		} catch (err) {
 			next({ status: 400, message: "Project Id is invalid." });
 		}
 	} catch (err) {

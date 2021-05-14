@@ -1,4 +1,14 @@
+const Projects = require("./model");
 const projectSchema = require("./validation");
+
+const verifyProjectId = async (req, res, next) => {
+	try {
+		req.project = await Projects.getProjectById(req.params.id);
+		next();
+	} catch (err) {
+		next({ status: 400, message: "Project Id is invalid." });
+	}
+};
 
 const verifyProjectPayload = async (req, res, next) => {
 	try {
@@ -11,4 +21,4 @@ const verifyProjectPayload = async (req, res, next) => {
 	}
 };
 
-module.exports = { verifyProjectPayload };
+module.exports = { verifyProjectId, verifyProjectPayload };

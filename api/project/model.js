@@ -10,8 +10,12 @@ const getAllProjects = async () => {
 	});
 };
 
-const getProjectById = (project_id) => {
-	return db("projects").where({ project_id }).first();
+const getProjectById = async (project_id) => {
+	const result = await db("projects").where({ project_id }).first();
+
+	if (!result) return Promise.reject(null);
+
+	return result;
 };
 
 const createProject = async (project) => {
@@ -23,4 +27,11 @@ const createProject = async (project) => {
 	return result;
 };
 
-module.exports = { getAllProjects, getProjectById, createProject };
+const removeProject = async (project_id) => {
+	const removedProject = await db("projects").where({ project_id }).first();
+	await db("projects").where({ project_id }).del();
+
+	return removedProject;
+};
+
+module.exports = { getAllProjects, getProjectById, createProject, removeProject };

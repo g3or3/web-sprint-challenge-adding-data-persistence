@@ -2,7 +2,7 @@ const Resources = require("./model");
 const router = require("express").Router();
 
 router.get("/", async (req, res) => {
-	res.json("testing");
+	res.json(await Resources.getAllResources());
 });
 
 router.post("/", async (req, res) => {

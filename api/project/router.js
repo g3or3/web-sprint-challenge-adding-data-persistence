@@ -18,6 +18,10 @@ router.post("/", verifyProjectPayload, async (req, res) => {
 	res.json(await Projects.createProject(req.body));
 });
 
+router.put("/:id", verifyProjectId, verifyProjectPayload, async (req, res) => {
+	res.json(await Projects.updateProject(req.params.id, req.body));
+});
+
 router.delete("/:id", verifyProjectId, async (req, res) => {
 	res.json(await Projects.removeProject(req.params.id));
 });

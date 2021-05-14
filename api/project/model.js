@@ -71,6 +71,12 @@ const createProject = async (project) => {
 	return results;
 };
 
+const updateProject = async (project_id, project) => {
+	await db("projects").where({ project_id }).update(project);
+
+	return getProjectById(project_id);
+};
+
 const removeProject = async (project_id) => {
 	const removedProject = await db("projects").where({ project_id }).first();
 	await db("projects").where({ project_id }).del();
@@ -83,5 +89,6 @@ module.exports = {
 	getProjectById,
 	getProjectDetails,
 	createProject,
+	updateProject,
 	removeProject,
 };

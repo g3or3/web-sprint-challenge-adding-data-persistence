@@ -11,20 +11,64 @@ const getAllProjects = async () => {
 };
 
 const getProjectById = async (project_id) => {
-	const result = await db("projects").where({ project_id }).first();
+	const results = await db("projects").where({ project_id }).first();
 
-	if (!result) return Promise.reject(null);
+	if (!results) return Promise.reject(null);
 
-	return result;
+	results.project_completed = results.project_completed === 0 ? false : true;
+
+	return results;
+};
+
+const getProjectDetails = async (project_id) => {
+	const results = await db("projects")
+		.select(
+			"project_name",
+			"project_description",
+			"project_completed",
+			"t.*",
+			"r.*",
+			"quantity"
+		)
+		.from("projects as p")
+		.join("tasks as t", "t.project_id", "p.project_id")
+		.join("project_resources as pr", "pr.project_id", "p.project_id")
+		.join("resources as r", "r.resource_id", "pr.resource_id")
+		.where("p.project_id", parseInt(project_id));
+
+	return results.reduce((acc, row) => {
+		let { project_id, project_name, project_description, project_completed } = row;
+		let { task_id, task_description, task_notes, task_completed } = row;
+		let { resource_id, resource_name, resource_description, quantity } = row;
+
+		task_completed = task_completed === 0 ? false : true;
+		project_completed = project_completed === 0 ? false : true;
+
+		if (!acc.tasks) {
+			acc = {
+				project_id,
+				project_name,
+				project_description,
+				project_completed,
+				tasks: [{ task_id, task_description, task_notes, task_completed }],
+				resources: [{ resource_id, resource_name, resource_description, quantity }],
+			};
+		} else {
+			acc.tasks.push({ task_id, task_description, task_notes, task_completed });
+			acc.resources.push({ resource_id, resource_name, resource_description, quantity });
+		}
+
+		return acc;
+	}, {});
 };
 
 const createProject = async (project) => {
 	const [project_id] = await db("projects").insert(project);
 
-	const result = await db("projects").where({ project_id }).first();
-	result.project_completed = result.project_completed === 0 ? false : true;
+	const results = await db("projects").where({ project_id }).first();
+	results.project_completed = results.project_completed === 0 ? false : true;
 
-	return result;
+	return results;
 };
 
 const removeProject = async (project_id) => {
@@ -34,4 +78,10 @@ const removeProject = async (project_id) => {
 	return removedProject;
 };
 
-module.exports = { getAllProjects, getProjectById, createProject, removeProject };
+module.exports = {
+	getAllProjects,
+	getProjectById,
+	getProjectDetails,
+	createProject,
+	removeProject,
+};

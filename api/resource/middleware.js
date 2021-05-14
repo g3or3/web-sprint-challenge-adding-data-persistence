@@ -1,6 +1,19 @@
 const Resources = require("./model");
 const resourceSchema = require("./validation");
 
+const verifyResourceExists = async (req, res, next) => {
+	if (req.params.id) {
+		if (await Resources.getResourceById(req.params.id)) {
+			return next();
+		}
+	} else if (req.query.resource) {
+		if (await Resources.getResourceByName(req.query.resource)) {
+			return next();
+		}
+	}
+	return next({ status: 404, message: "Resource does not exist." });
+};
+
 const verifyResourcePayload = async (req, res, next) => {
 	try {
 		req.body = await resourceSchema.validateAsync(req.body, {
@@ -16,4 +29,4 @@ const verifyResourcePayload = async (req, res, next) => {
 	}
 };
 
-module.exports = { verifyResourcePayload };
+module.exports = { verifyResourceExists, verifyResourcePayload };

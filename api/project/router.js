@@ -10,6 +10,10 @@ router.get("/:id", verifyProjectId, async (req, res) => {
 	res.json(req.project);
 });
 
+router.get("/:id/details", verifyProjectId, async (req, res) => {
+	res.json(await Projects.getProjectDetails(req.params.id));
+});
+
 router.post("/", verifyProjectPayload, async (req, res) => {
 	res.json(await Projects.createProject(req.body));
 });

@@ -13,7 +13,7 @@ const getResourceByName = (resource_name) => {
 };
 
 const getResourcesByProject = ({ project_id, project_name }) => {
-	const searchBy = project_id ? { project_id } : { project_name };
+	const searchBy = project_id ? { "p.project_id": project_id } : { project_name };
 
 	return db
 		.select("r.*", "quantity")

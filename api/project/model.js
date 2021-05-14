@@ -20,6 +20,23 @@ const getProjectById = async (project_id) => {
 	return results;
 };
 
+const getProjectsUsingResource = async (resource_name) => {
+	const results = await db
+		.select("p.*")
+		.from("projects as p")
+		.join("project_resources as pr", "pr.project_id", "p.project_id")
+		.join("resources as r", "r.resource_id", "pr.resource_id")
+		.where({ resource_name });
+
+	if (!results) return null;
+
+	return results.map((proj) => {
+		proj.project_completed = proj.project_completed === 0 ? false : true;
+
+		return proj;
+	});
+};
+
 const getProjectDetails = async (project_id) => {
 	const results = await db("projects")
 		.select(
@@ -87,6 +104,7 @@ const removeProject = async (project_id) => {
 module.exports = {
 	getAllProjects,
 	getProjectById,
+	getProjectsUsingResource,
 	getProjectDetails,
 	createProject,
 	updateProject,

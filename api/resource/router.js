@@ -2,19 +2,16 @@ const Resources = require("./model");
 const { verifyResourcePayload, verifyResourceExists } = require("./middleware");
 const router = require("express").Router();
 
-router.get("/", async (req, res) => {
-	if (!req.query.project) {
-		res.json(await Resources.getAllResources());
-	} else {
-		const isId = parseInt(req.query.project);
-		if (isId) {
-			res.json(await Resources.getResourcesByProject({ project_id: isId }));
-		} else {
-			res.json(
-				await Resources.getResourcesByProject({ project_name: req.query.project })
-			);
-		}
-	}
+router.get("/", async (req, res, next) => {
+	if (!req.query.project) return res.json(await Resources.getAllResources());
+
+	const isId = parseInt(req.query.project);
+	const searchBy = isId ? { project_id: isId } : { project_name: req.query.project };
+
+	const resources = await Resources.getResourcesByProject(searchBy);
+
+	if (resources.length) res.json(resources);
+	else next({ status: 400, message: "No resources with that project id." });
 });
 
 router.get("/:id", verifyResourceExists, async (req, res) => {
